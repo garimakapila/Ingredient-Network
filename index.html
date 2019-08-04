@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<!--Source: https://bl.ocks.org/almsuarez/4333a12d2531d6c1f6f22b74f2c57102-->
+<meta charset="utf-8">
+<style>
+
+  .link {
+    stroke: #c1c1c1;
+    stroke-width: 2px;
+    pointer-events: all;
+  }
+
+  .node circle {
+    pointer-events: all;
+    stroke: #777;
+    stroke-width: 1px;
+    cursor: pointer;
+  }
+text {
+  font-family: sans-serif;
+  font-size: 10px;
+}
+#svg-container {
+  text-align: center;
+}
+svg {
+  border: 5px solid black;
+}
+  div.tooltip {
+    position: absolute;
+    background-color: white;
+    max-width: 200px;
+    height: auto;
+    padding: 1px;
+    border-style: solid;
+    border-radius: 4px;
+    border-width: 1px;
+    box-shadow: 3px 3px 10px rgba(0, 0, 0, .5);
+    pointer-events: none;
+  }
+
+</style>
+<body>
+</body>
+<div id="svg-container">
+  <svg width="1000" height="700"></svg>
+</div>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/2.24.0/d3-legend.min.js"></script>
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+<script>
+
+
+
+  var graph = {
+           "nodes":[
+              {"id": "CINNAMON", "group": "8"} ,
+              {"id": "NUTMEG", "group": "8"} ,
+              {"id": "GARLIC", "group": "8"} ,
+              {"id": "CLOVES", "group": "7"} ,
+              {"id": "CUMIN", "group": "7"} ,
+              {"id": "ONION", "group": "6"} ,
+              {"id": "BASIL", "group": "6"} ,
+              {"id": "GINGER", "group": "6"} ,
+              {"id": "MINT", "group": "6"} ,
+              {"id": "CHILI PEPPER", "group": "6"} ,
+              {"id": "THYME", "group": "5"} ,
+              {"id": "BLACK PEPPER", "group": "5"} ,
+              {"id": "TURMERIC", "group": "5"} ,
+              {"id": "SAFFRON", "group": "5"} ,
+              {"id": "PARSLEY", "group": "4"} ,
+              {"id": "OREGANO", "group": "4"} ,
+              {"id": "MARJORAM", "group": "3"} ,
+              {"id": "ALLSPICE", "group": "3"} ,
+              {"id": "CORIANDER", "group": "3"} ,
+              {"id": "TARRAGON", "group": "3"} ,
+              {"id": "SAGE", "group": "3"} ,
+              {"id": "CAYENNE", "group": "3"} ,
+              {"id": "FENNEL SEED", "group": "3"} ,
+              {"id": "LIME", "group": "3"} ,
+              {"id": "LEMON", "group": "2"} ,
+              {"id": "BAY LEAF", "group": "2"} ,
+              {"id": "SAVORY", "group": "2"} ,
+              {"id": "STAR ANISE", "group": "2"} ,
+              {"id": "LONG PEPPER", "group": "2"} ,
+              {"id": "CUBEB BERRIES", "group": "2"} ,
+              {"id": "CARDAMOM", "group": "2"} ,
+              {"id": "PAPRIKA", "group": "2"} ,
+              {"id": "LEMONGRASS", "group": "2"} ,
+              {"id": "ANISE SEED", "group": "2"} ,
+              {"id": "ROSEMARY", "group": "2"} ,
+              {"id": "SUMAC", "group": "1"} ,
+              {"id": "BLACK CARAWAY", "group": "1"} ,
+              {"id": "SESAME SEED", "group": "1"} ,
+              {"id": "BLACK MUSTARD SEED", "group": "1"} ,
+              {"id": "SHALLOT", "group": "1"} ,
+              {"id": "ASAFOETIDA", "group": "1"} ,
+              {"id": "DILL SEED", "group": "1"} ,
+              {"id": "YELLOW MUSTARD", "group": "1"} ,
+              {"id": "POPPY SEED", "group": "1"} ,
+              {"id": "GRAINS OF PARADISE", "group": "1"} ,
+              {"id": "GUMBO FIL", "group": "1"} ,
+              {"id": "JUNIPER", "group": "1"} ,
+              {"id": "CHERVIL", "group": "1"} ,
+              {"id": "VANILLA EXTRACT", "group": "1"} ,
+              {"id": "BLACK CUMIN", "group": "1"} ,
+              {"id": "AJWAIN", "group": "1"} ,
+              {"id": "EPAZOTE", "group": "1"} ,
+              {"id": "CHIVES", "group": "1"} ,
+              {"id": "LEEK", "group": "1"} 
+           ],
+       "links":[
+            {"source": "BASIL", "target": "BAY LEAF", "value": 5} ,
+            {"source": "BASIL", "target": "CARDAMOM", "value": 5} ,
+            {"source": "MARJORAM", "target": "CARDAMOM", "value": 5} ,
+            {"source": "CORIANDER", "target": "CARDAMOM", "value": 5} ,
+            {"source": "CORIANDER", "target": "EPAZOTE", "value": 5} ,
+            {"source": "BAY LEAF", "target": "CARDAMOM", "value": 5} ,
+            {"source": "CARDAMOM", "target": "LEMONGRASS", "value": 5} ,
+            {"source": "CARDAMOM", "target": "EPAZOTE", "value": 5} ,
+            {"source": "BLACK PEPPER", "target": "JUNIPER", "value": 4} ,
+            {"source": "SAVORY", "target": "ROSEMARY", "value": 4} ,
+            {"source": "SAVORY", "target": "EPAZOTE", "value": 4} ,
+            {"source": "CARDAMOM", "target": "JUNIPER", "value": 4} ,
+            {"source": "BLACK CUMIN", "target": "AJWAIN", "value": 4} ,
+            {"source": "NUTMEG", "target": "BASIL", "value": 3} ,
+            {"source": "NUTMEG", "target": "TARRAGON", "value": 3} ,
+            {"source": "NUTMEG", "target": "FENNEL SEED", "value": 3} ,
+            {"source": "NUTMEG", "target": "CARDAMOM", "value": 3} ,
+            {"source": "BASIL", "target": "TARRAGON", "value": 3} ,
+            {"source": "BASIL", "target": "FENNEL SEED", "value": 3} ,
+            {"source": "THYME", "target": "CARDAMOM", "value": 3} ,
+            {"source": "THYME", "target": "EPAZOTE", "value": 3} ,
+            {"source": "CORIANDER", "target": "SAVORY", "value": 3} ,
+            {"source": "CORIANDER", "target": "ROSEMARY", "value": 3} ,
+            {"source": "TARRAGON", "target": "FENNEL SEED", "value": 3} ,
+            {"source": "TARRAGON", "target": "SAVORY", "value": 3} ,
+            {"source": "TARRAGON", "target": "CARDAMOM", "value": 3} ,
+            {"source": "TARRAGON", "target": "ROSEMARY", "value": 3} ,
+            {"source": "TARRAGON", "target": "JUNIPER", "value": 3} ,
+            {"source": "SAGE", "target": "ROSEMARY", "value": 3} ,
+            {"source": "FENNEL SEED", "target": "LIME", "value": 3} ,
+            {"source": "FENNEL SEED", "target": "SAVORY", "value": 3} ,
+            {"source": "FENNEL SEED", "target": "CARDAMOM", "value": 3} ,
+            {"source": "FENNEL SEED", "target": "ROSEMARY", "value": 3} ,
+            {"source": "FENNEL SEED", "target": "JUNIPER", "value": 3} ,
+            {"source": "FENNEL SEED", "target": "EPAZOTE", "value": 3} ,
+            {"source": "SAVORY", "target": "CARDAMOM", "value": 3} ,
+            {"source": "CUBEB BERRIES", "target": "JUNIPER", "value": 3} ,
+            {"source": "CARDAMOM", "target": "ROSEMARY", "value": 3} ,
+            {"source": "CARDAMOM", "target": "BLACK CARAWAY", "value": 3} ,
+            {"source": "CARDAMOM", "target": "DILL SEED", "value": 3} ,
+            {"source": "PAPRIKA", "target": "PAPRIKA", "value": 3} ,
+            {"source": "ROSEMARY", "target": "EPAZOTE", "value": 3} ,
+            {"source": "BLACK CARAWAY", "target": "BLACK CUMIN", "value": 3} ,
+            {"source": "SESAME SEED", "target": "BLACK CUMIN", "value": 3} ,
+            {"source": "SESAME SEED", "target": "AJWAIN", "value": 3} ,
+            {"source": "SHALLOT", "target": "LEEK", "value": 3} ,
+            {"source": "JUNIPER", "target": "EPAZOTE", "value": 3} ,
+            {"source": "AJWAIN", "target": "EPAZOTE", "value": 3} ,
+            {"source": "CHIVES", "target": "LEEK", "value": 3} ,
+            {"source": "CINNAMON", "target": "CLOVES", "value": 2} ,
+            {"source": "CINNAMON", "target": "BASIL", "value": 2} ,
+            {"source": "CINNAMON", "target": "ALLSPICE", "value": 2} ,
+            {"source": "NUTMEG", "target": "BLACK PEPPER", "value": 2} ,
+            {"source": "NUTMEG", "target": "PARSLEY", "value": 2} ,
+            {"source": "NUTMEG", "target": "ALLSPICE", "value": 2} ,
+            {"source": "NUTMEG", "target": "SAVORY", "value": 2} ,
+            {"source": "NUTMEG", "target": "ROSEMARY", "value": 2} ,
+            {"source": "NUTMEG", "target": "JUNIPER", "value": 2} ,
+            {"source": "NUTMEG", "target": "CHERVIL", "value": 2} ,
+            {"source": "GARLIC", "target": "ONION", "value": 2} ,
+            {"source": "CLOVES", "target": "ALLSPICE", "value": 2} ,
+            {"source": "CLOVES", "target": "GRAINS OF PARADISE", "value": 2} ,
+            {"source": "CUMIN", "target": "CORIANDER", "value": 2} ,
+            {"source": "CUMIN", "target": "CARDAMOM", "value": 2} ,
+            {"source": "CUMIN", "target": "EPAZOTE", "value": 2} ,
+            {"source": "ONION", "target": "SHALLOT", "value": 2} ,
+            {"source": "ONION", "target": "CHIVES", "value": 2} ,
+            {"source": "ONION", "target": "LEEK", "value": 2} ,
+            {"source": "BASIL", "target": "CORIANDER", "value": 2} ,
+            {"source": "BASIL", "target": "SAVORY", "value": 2} ,
+            {"source": "BASIL", "target": "ROSEMARY", "value": 2} ,
+            {"source": "BASIL", "target": "ASAFOETIDA", "value": 2} ,
+            {"source": "BASIL", "target": "JUNIPER", "value": 2} ,
+            {"source": "THYME", "target": "CORIANDER", "value": 2} ,
+            {"source": "THYME", "target": "SAVORY", "value": 2} ,
+            {"source": "THYME", "target": "AJWAIN", "value": 2} ,
+            {"source": "BLACK PEPPER", "target": "TARRAGON", "value": 2} ,
+            {"source": "BLACK PEPPER", "target": "LONG PEPPER", "value": 2} ,
+            {"source": "BLACK PEPPER", "target": "CUBEB BERRIES", "value": 2} ,
+            {"source": "BLACK PEPPER", "target": "CARDAMOM", "value": 2} ,
+            {"source": "PARSLEY", "target": "CHERVIL", "value": 2} ,
+            {"source": "OREGANO", "target": "SAVORY", "value": 2} ,
+            {"source": "MARJORAM", "target": "CORIANDER", "value": 2} ,
+            {"source": "MARJORAM", "target": "AJWAIN", "value": 2} ,
+            {"source": "MARJORAM", "target": "EPAZOTE", "value": 2} ,
+            {"source": "CORIANDER", "target": "TARRAGON", "value": 2} ,
+            {"source": "CORIANDER", "target": "FENNEL SEED", "value": 2} ,
+            {"source": "CORIANDER", "target": "LIME", "value": 2} ,
+            {"source": "CORIANDER", "target": "BAY LEAF", "value": 2} ,
+            {"source": "CORIANDER", "target": "LEMONGRASS", "value": 2} ,
+            {"source": "CORIANDER", "target": "BLACK CARAWAY", "value": 2} ,
+            {"source": "CORIANDER", "target": "DILL SEED", "value": 2} ,
+            {"source": "CORIANDER", "target": "GUMBO FIL", "value": 2} ,
+            {"source": "CORIANDER", "target": "JUNIPER", "value": 2} ,
+            {"source": "CORIANDER", "target": "BLACK CUMIN", "value": 2} ,
+            {"source": "CORIANDER", "target": "AJWAIN", "value": 2} ,
+            {"source": "TARRAGON", "target": "LIME", "value": 2} ,
+            {"source": "TARRAGON", "target": "EPAZOTE", "value": 2} ,
+            {"source": "FENNEL SEED", "target": "LEMONGRASS", "value": 2} ,
+            {"source": "FENNEL SEED", "target": "BLACK CUMIN", "value": 2} ,
+            {"source": "LIME", "target": "LEMON", "value": 2} ,
+            {"source": "LIME", "target": "SAVORY", "value": 2} ,
+            {"source": "LIME", "target": "CARDAMOM", "value": 2} ,
+            {"source": "LIME", "target": "LEMONGRASS", "value": 2} ,
+            {"source": "LIME", "target": "ROSEMARY", "value": 2} ,
+            {"source": "LIME", "target": "GUMBO FIL", "value": 2} ,
+            {"source": "LIME", "target": "JUNIPER", "value": 2} ,
+            {"source": "LIME", "target": "EPAZOTE", "value": 2} ,
+            {"source": "LEMON", "target": "LEMONGRASS", "value": 2} ,
+            {"source": "BAY LEAF", "target": "ASAFOETIDA", "value": 2} ,
+            {"source": "SAVORY", "target": "BLACK CARAWAY", "value": 2} ,
+            {"source": "SAVORY", "target": "DILL SEED", "value": 2} ,
+            {"source": "SAVORY", "target": "JUNIPER", "value": 2} ,
+            {"source": "SAVORY", "target": "BLACK CUMIN", "value": 2} ,
+            {"source": "SAVORY", "target": "AJWAIN", "value": 2} ,
+            {"source": "CARDAMOM", "target": "ASAFOETIDA", "value": 2} ,
+            {"source": "CARDAMOM", "target": "BLACK CUMIN", "value": 2} ,
+            {"source": "CARDAMOM", "target": "AJWAIN", "value": 2} ,
+            {"source": "LEMONGRASS", "target": "BLACK CARAWAY", "value": 2} ,
+            {"source": "LEMONGRASS", "target": "JUNIPER", "value": 2} ,
+            {"source": "LEMONGRASS", "target": "EPAZOTE", "value": 2} ,
+            {"source": "ROSEMARY", "target": "GUMBO FIL", "value": 2} ,
+            {"source": "ROSEMARY", "target": "JUNIPER", "value": 2} ,
+            {"source": "BLACK CARAWAY", "target": "DILL SEED", "value": 2} ,
+            {"source": "BLACK CARAWAY", "target": "EPAZOTE", "value": 2} ,
+            {"source": "SESAME SEED", "target": "BLACK MUSTARD SEED", "value": 2} ,
+            {"source": "SESAME SEED", "target": "POPPY SEED", "value": 2} ,
+            {"source": "BLACK MUSTARD SEED", "target": "BLACK CUMIN", "value": 2} ,
+            {"source": "BLACK MUSTARD SEED", "target": "AJWAIN", "value": 2} ,
+            {"source": "SHALLOT", "target": "CHIVES", "value": 2} ,
+            {"source": "DILL SEED", "target": "BLACK CUMIN", "value": 2} ,
+            {"source": "DILL SEED", "target": "EPAZOTE", "value": 2} ,
+            {"source": "POPPY SEED", "target": "BLACK CUMIN", "value": 2} ,
+            {"source": "POPPY SEED", "target": "AJWAIN", "value": 2} ,
+            {"source": "GUMBO FIL", "target": "EPAZOTE", "value": 2} ,
+            {"source": "BLACK CUMIN", "target": "EPAZOTE", "value": 2} ,
+            {"source": "CINNAMON", "target": "NUTMEG", "value": 1} ,
+            {"source": "CINNAMON", "target": "BLACK PEPPER", "value": 1} ,
+            {"source": "CINNAMON", "target": "LONG PEPPER", "value": 1} ,
+            {"source": "CINNAMON", "target": "CUBEB BERRIES", "value": 1} ,
+            {"source": "CINNAMON", "target": "CARDAMOM", "value": 1} ,
+            {"source": "CINNAMON", "target": "GRAINS OF PARADISE", "value": 1} ,
+            {"source": "CINNAMON", "target": "JUNIPER", "value": 1} ,
+            {"source": "NUTMEG", "target": "CLOVES", "value": 1} ,
+            {"source": "NUTMEG", "target": "CUMIN", "value": 1} ,
+            {"source": "NUTMEG", "target": "MARJORAM", "value": 1} ,
+            {"source": "NUTMEG", "target": "CORIANDER", "value": 1} ,
+            {"source": "NUTMEG", "target": "LIME", "value": 1} ,
+            {"source": "NUTMEG", "target": "BAY LEAF", "value": 1} ,
+            {"source": "NUTMEG", "target": "CUBEB BERRIES", "value": 1} ,
+            {"source": "NUTMEG", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "NUTMEG", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "NUTMEG", "target": "EPAZOTE", "value": 1} ,
+            {"source": "GARLIC", "target": "GINGER", "value": 1} ,
+            {"source": "GARLIC", "target": "SHALLOT", "value": 1} ,
+            {"source": "GARLIC", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "GARLIC", "target": "CHIVES", "value": 1} ,
+            {"source": "GARLIC", "target": "LEEK", "value": 1} ,
+            {"source": "CLOVES", "target": "BASIL", "value": 1} ,
+            {"source": "CLOVES", "target": "BLACK PEPPER", "value": 1} ,
+            {"source": "CLOVES", "target": "LONG PEPPER", "value": 1} ,
+            {"source": "CLOVES", "target": "CUBEB BERRIES", "value": 1} ,
+            {"source": "CLOVES", "target": "CARDAMOM", "value": 1} ,
+            {"source": "CLOVES", "target": "JUNIPER", "value": 1} ,
+            {"source": "CUMIN", "target": "BASIL", "value": 1} ,
+            {"source": "CUMIN", "target": "BLACK PEPPER", "value": 1} ,
+            {"source": "CUMIN", "target": "SAFFRON", "value": 1} ,
+            {"source": "CUMIN", "target": "MARJORAM", "value": 1} ,
+            {"source": "CUMIN", "target": "TARRAGON", "value": 1} ,
+            {"source": "CUMIN", "target": "FENNEL SEED", "value": 1} ,
+            {"source": "CUMIN", "target": "LIME", "value": 1} ,
+            {"source": "CUMIN", "target": "BAY LEAF", "value": 1} ,
+            {"source": "CUMIN", "target": "SAVORY", "value": 1} ,
+            {"source": "CUMIN", "target": "ROSEMARY", "value": 1} ,
+            {"source": "CUMIN", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "CUMIN", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "CUMIN", "target": "JUNIPER", "value": 1} ,
+            {"source": "CUMIN", "target": "CHERVIL", "value": 1} ,
+            {"source": "CUMIN", "target": "AJWAIN", "value": 1} ,
+            {"source": "ONION", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "BASIL", "target": "MINT", "value": 1} ,
+            {"source": "BASIL", "target": "THYME", "value": 1} ,
+            {"source": "BASIL", "target": "BLACK PEPPER", "value": 1} ,
+            {"source": "BASIL", "target": "MARJORAM", "value": 1} ,
+            {"source": "BASIL", "target": "ALLSPICE", "value": 1} ,
+            {"source": "BASIL", "target": "LIME", "value": 1} ,
+            {"source": "BASIL", "target": "CUBEB BERRIES", "value": 1} ,
+            {"source": "BASIL", "target": "LEMONGRASS", "value": 1} ,
+            {"source": "BASIL", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "BASIL", "target": "CHERVIL", "value": 1} ,
+            {"source": "BASIL", "target": "EPAZOTE", "value": 1} ,
+            {"source": "GINGER", "target": "TURMERIC", "value": 1} ,
+            {"source": "MINT", "target": "TARRAGON", "value": 1} ,
+            {"source": "MINT", "target": "BAY LEAF", "value": 1} ,
+            {"source": "MINT", "target": "BLACK CARAWAY", "value": 1} ,
+            {"source": "MINT", "target": "GRAINS OF PARADISE", "value": 1} ,
+            {"source": "MINT", "target": "BLACK CUMIN", "value": 1} ,
+            {"source": "MINT", "target": "EPAZOTE", "value": 1} ,
+            {"source": "CHILI PEPPER", "target": "CAYENNE", "value": 1} ,
+            {"source": "CHILI PEPPER", "target": "PAPRIKA", "value": 1} ,
+            {"source": "THYME", "target": "OREGANO", "value": 1} ,
+            {"source": "THYME", "target": "MARJORAM", "value": 1} ,
+            {"source": "THYME", "target": "SAGE", "value": 1} ,
+            {"source": "THYME", "target": "FENNEL SEED", "value": 1} ,
+            {"source": "THYME", "target": "BAY LEAF", "value": 1} ,
+            {"source": "THYME", "target": "LEMONGRASS", "value": 1} ,
+            {"source": "THYME", "target": "ROSEMARY", "value": 1} ,
+            {"source": "THYME", "target": "BLACK CARAWAY", "value": 1} ,
+            {"source": "THYME", "target": "DILL SEED", "value": 1} ,
+            {"source": "THYME", "target": "JUNIPER", "value": 1} ,
+            {"source": "THYME", "target": "BLACK CUMIN", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "MARJORAM", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "ALLSPICE", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "CORIANDER", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "FENNEL SEED", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "LIME", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "BAY LEAF", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "SAVORY", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "ROSEMARY", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "GRAINS OF PARADISE", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "CHERVIL", "value": 1} ,
+            {"source": "BLACK PEPPER", "target": "EPAZOTE", "value": 1} ,
+            {"source": "OREGANO", "target": "LONG PEPPER", "value": 1} ,
+            {"source": "OREGANO", "target": "AJWAIN", "value": 1} ,
+            {"source": "OREGANO", "target": "EPAZOTE", "value": 1} ,
+            {"source": "MARJORAM", "target": "TARRAGON", "value": 1} ,
+            {"source": "MARJORAM", "target": "BAY LEAF", "value": 1} ,
+            {"source": "MARJORAM", "target": "SAVORY", "value": 1} ,
+            {"source": "MARJORAM", "target": "CUBEB BERRIES", "value": 1} ,
+            {"source": "MARJORAM", "target": "BLACK CARAWAY", "value": 1} ,
+            {"source": "MARJORAM", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "MARJORAM", "target": "DILL SEED", "value": 1} ,
+            {"source": "MARJORAM", "target": "JUNIPER", "value": 1} ,
+            {"source": "MARJORAM", "target": "BLACK CUMIN", "value": 1} ,
+            {"source": "ALLSPICE", "target": "LONG PEPPER", "value": 1} ,
+            {"source": "ALLSPICE", "target": "CUBEB BERRIES", "value": 1} ,
+            {"source": "ALLSPICE", "target": "CARDAMOM", "value": 1} ,
+            {"source": "ALLSPICE", "target": "GRAINS OF PARADISE", "value": 1} ,
+            {"source": "ALLSPICE", "target": "JUNIPER", "value": 1} ,
+            {"source": "CORIANDER", "target": "SAGE", "value": 1} ,
+            {"source": "CORIANDER", "target": "LEMON", "value": 1} ,
+            {"source": "CORIANDER", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "CORIANDER", "target": "CHERVIL", "value": 1} ,
+            {"source": "TARRAGON", "target": "LEMON", "value": 1} ,
+            {"source": "TARRAGON", "target": "BAY LEAF", "value": 1} ,
+            {"source": "TARRAGON", "target": "CUBEB BERRIES", "value": 1} ,
+            {"source": "TARRAGON", "target": "LEMONGRASS", "value": 1} ,
+            {"source": "TARRAGON", "target": "ANISE SEED", "value": 1} ,
+            {"source": "TARRAGON", "target": "BLACK CARAWAY", "value": 1} ,
+            {"source": "TARRAGON", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "TARRAGON", "target": "DILL SEED", "value": 1} ,
+            {"source": "TARRAGON", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "TARRAGON", "target": "CHERVIL", "value": 1} ,
+            {"source": "TARRAGON", "target": "BLACK CUMIN", "value": 1} ,
+            {"source": "SAGE", "target": "CARDAMOM", "value": 1} ,
+            {"source": "SAGE", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "SAGE", "target": "EPAZOTE", "value": 1} ,
+            {"source": "CAYENNE", "target": "PAPRIKA", "value": 1} ,
+            {"source": "FENNEL SEED", "target": "LEMON", "value": 1} ,
+            {"source": "FENNEL SEED", "target": "BAY LEAF", "value": 1} ,
+            {"source": "FENNEL SEED", "target": "STAR ANISE", "value": 1} ,
+            {"source": "FENNEL SEED", "target": "ANISE SEED", "value": 1} ,
+            {"source": "FENNEL SEED", "target": "BLACK CARAWAY", "value": 1} ,
+            {"source": "FENNEL SEED", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "FENNEL SEED", "target": "DILL SEED", "value": 1} ,
+            {"source": "FENNEL SEED", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "FENNEL SEED", "target": "CHERVIL", "value": 1} ,
+            {"source": "LIME", "target": "BAY LEAF", "value": 1} ,
+            {"source": "LIME", "target": "BLACK CARAWAY", "value": 1} ,
+            {"source": "LIME", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "LIME", "target": "DILL SEED", "value": 1} ,
+            {"source": "LIME", "target": "CHERVIL", "value": 1} ,
+            {"source": "LIME", "target": "BLACK CUMIN", "value": 1} ,
+            {"source": "LEMON", "target": "SAVORY", "value": 1} ,
+            {"source": "LEMON", "target": "CARDAMOM", "value": 1} ,
+            {"source": "LEMON", "target": "ROSEMARY", "value": 1} ,
+            {"source": "LEMON", "target": "SUMAC", "value": 1} ,
+            {"source": "LEMON", "target": "BLACK CARAWAY", "value": 1} ,
+            {"source": "LEMON", "target": "DILL SEED", "value": 1} ,
+            {"source": "LEMON", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "LEMON", "target": "JUNIPER", "value": 1} ,
+            {"source": "LEMON", "target": "BLACK CUMIN", "value": 1} ,
+            {"source": "LEMON", "target": "EPAZOTE", "value": 1} ,
+            {"source": "BAY LEAF", "target": "SAVORY", "value": 1} ,
+            {"source": "BAY LEAF", "target": "LEMONGRASS", "value": 1} ,
+            {"source": "BAY LEAF", "target": "ROSEMARY", "value": 1} ,
+            {"source": "BAY LEAF", "target": "DILL SEED", "value": 1} ,
+            {"source": "BAY LEAF", "target": "GRAINS OF PARADISE", "value": 1} ,
+            {"source": "BAY LEAF", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "BAY LEAF", "target": "JUNIPER", "value": 1} ,
+            {"source": "BAY LEAF", "target": "CHERVIL", "value": 1} ,
+            {"source": "BAY LEAF", "target": "EPAZOTE", "value": 1} ,
+            {"source": "SAVORY", "target": "LEMONGRASS", "value": 1} ,
+            {"source": "SAVORY", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "SAVORY", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "SAVORY", "target": "CHERVIL", "value": 1} ,
+            {"source": "STAR ANISE", "target": "ANISE SEED", "value": 1} ,
+            {"source": "STAR ANISE", "target": "BLACK CUMIN", "value": 1} ,
+            {"source": "LONG PEPPER", "target": "CUBEB BERRIES", "value": 1} ,
+            {"source": "LONG PEPPER", "target": "GRAINS OF PARADISE", "value": 1} ,
+            {"source": "LONG PEPPER", "target": "JUNIPER", "value": 1} ,
+            {"source": "CUBEB BERRIES", "target": "CARDAMOM", "value": 1} ,
+            {"source": "CUBEB BERRIES", "target": "GRAINS OF PARADISE", "value": 1} ,
+            {"source": "CARDAMOM", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "CARDAMOM", "target": "CHERVIL", "value": 1} ,
+            {"source": "LEMONGRASS", "target": "ROSEMARY", "value": 1} ,
+            {"source": "LEMONGRASS", "target": "DILL SEED", "value": 1} ,
+            {"source": "LEMONGRASS", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "LEMONGRASS", "target": "BLACK CUMIN", "value": 1} ,
+            {"source": "ANISE SEED", "target": "BLACK CUMIN", "value": 1} ,
+            {"source": "ROSEMARY", "target": "BLACK CARAWAY", "value": 1} ,
+            {"source": "ROSEMARY", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "ROSEMARY", "target": "DILL SEED", "value": 1} ,
+            {"source": "ROSEMARY", "target": "CHERVIL", "value": 1} ,
+            {"source": "ROSEMARY", "target": "BLACK CUMIN", "value": 1} ,
+            {"source": "BLACK CARAWAY", "target": "SESAME SEED", "value": 1} ,
+            {"source": "BLACK CARAWAY", "target": "BLACK MUSTARD SEED", "value": 1} ,
+            {"source": "BLACK CARAWAY", "target": "JUNIPER", "value": 1} ,
+            {"source": "BLACK CARAWAY", "target": "AJWAIN", "value": 1} ,
+            {"source": "BLACK MUSTARD SEED", "target": "YELLOW MUSTARD", "value": 1} ,
+            {"source": "BLACK MUSTARD SEED", "target": "POPPY SEED", "value": 1} ,
+            {"source": "SHALLOT", "target": "ASAFOETIDA", "value": 1} ,
+            {"source": "ASAFOETIDA", "target": "GUMBO FIL", "value": 1} ,
+            {"source": "ASAFOETIDA", "target": "JUNIPER", "value": 1} ,
+            {"source": "ASAFOETIDA", "target": "CHERVIL", "value": 1} ,
+            {"source": "ASAFOETIDA", "target": "VANILLA EXTRACT", "value": 1} ,
+            {"source": "ASAFOETIDA", "target": "EPAZOTE", "value": 1} ,
+            {"source": "ASAFOETIDA", "target": "CHIVES", "value": 1} ,
+            {"source": "ASAFOETIDA", "target": "LEEK", "value": 1} ,
+            {"source": "DILL SEED", "target": "JUNIPER", "value": 1} ,
+            {"source": "DILL SEED", "target": "AJWAIN", "value": 1} ,
+            {"source": "GRAINS OF PARADISE", "target": "JUNIPER", "value": 1} ,
+            {"source": "GRAINS OF PARADISE", "target": "EPAZOTE", "value": 1} ,
+            {"source": "GUMBO FIL", "target": "JUNIPER", "value": 1} ,
+            {"source": "GUMBO FIL", "target": "CHERVIL", "value": 1} ,
+            {"source": "JUNIPER", "target": "CHERVIL", "value": 1} ,
+            {"source": "JUNIPER", "target": "BLACK CUMIN", "value": 1} ,
+            {"source": "CHERVIL", "target": "EPAZOTE", "value": 1}
+       ]
+    };
+
+
+
+
+var color = ["#f7fbff",  "#deebf7",  "#c6dbef",  "#9ecae1",  "#6baed6", "#4292c6",  "#2171b5",  "#08519c",  "#08306b"];
+
+
+
+
+var tooltip = d3.select("body")
+  .append("div")
+  .attr("class", "tooltip")
+  .style("opacity", 0);
+
+
+  const svg = d3.select('svg'),
+  width = +svg.attr('width'),
+  height = +svg.attr('height');
+
+
+
+  //  const width = 960;
+  //   const height = 700;
+
+  const simulation = d3.forceSimulation()
+    .nodes(graph.nodes)
+    .force('link', d3.forceLink().id(d => d.id).distance(150))
+    .force('charge', d3.forceManyBody())
+    .force('center', d3.forceCenter(width / 2, height / 2))
+    .on('tick', ticked);
+
+  simulation.force('link')
+    .links(graph.links);
+
+  const R = 6;
+  
+
+
+
+  let link = svg.selectAll('line')
+    .data(graph.links)
+    .enter().append('line');
+
+  link  
+    .attr('class', 'link')
+    .on('mouseout.fade', fade(1))
+    .on("mousemove", function() {
+        tooltip.style("left", (d3.event.pageX) + "px")
+        .style("top", (d3.event.pageY + 10) + "px");
+    });
+
+
+  let node = svg.selectAll('.node')
+    .data(graph.nodes)
+    .enter().append('g')
+    .attr('class', 'node')
+    .call(d3.drag()
+    .on("start", dragstarted)
+    .on("drag", dragged)
+    .on("end", dragended));
+
+  var lables = node.append("text")
+      .text(function(d) {
+        return d.id;
+      })
+      .attr('x', 15)
+      .attr('y', 3);
+
+      node.append("title")
+          .text(d => d.id);
+
+
+  node.append('circle')
+    .attr('r', 10)
+    .attr("fill", function(d) { return color[d.group]}) 	
+    .on('mouseover.fade', fade(0.1))
+    .on('mouseout.fade', fade(1))
+    .on('dblclick',releasenode)
+
+
+  node.append('text')
+  .attr('x', 0)
+  .attr('dy', '.35em')
+  .text(d => d.name);
+
+  function ticked() {
+    link
+    .attr('x1', d => d.source.x)
+    .attr('y1', d => d.source.y)
+    .attr('x2', d => d.target.x)
+    .attr('y2', d => d.target.y);
+
+    node
+    .attr('transform', d => `translate(${d.x},${d.y})`);
+  }
+
+  function dragstarted(d) {
+    if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+    d.fx = d.x;
+    d.fy = d.y;
+  }
+
+  function dragged(d) {
+    d.fx = d3.event.x;
+    d.fy = d3.event.y;
+  }
+
+function dragended(d) {
+if (!d3.event.active) simulation.alphaTarget(0);
+//d.fx = null;
+//d.fy = null;
+}
+function releasenode(d) {
+d.fx = null;
+d.fy = null;
+}
+
+const linkedByIndex = {};
+graph.links.forEach(d => {
+linkedByIndex[`${d.source.index},${d.target.index}`] = 1;
+});
+
+function isConnected(a, b) {
+return linkedByIndex[`${a.index},${b.index}`] || linkedByIndex[`${b.index},${a.index}`] || a.index === b.index;
+}
+
+function fade(opacity) {
+  return d => {
+  node.style('stroke-opacity', function (o) {
+  const thisOpacity = isConnected(d, o) ? 1 : opacity;
+  this.setAttribute('fill-opacity', thisOpacity);
+  return thisOpacity;
+  });
+
+  link.style('stroke-opacity', o => (o.source === d || o.target === d ? 1 : opacity));
+
+  };
+}
+
+</script>
